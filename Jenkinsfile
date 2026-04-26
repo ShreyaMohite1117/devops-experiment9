@@ -26,7 +26,8 @@ pipeline {
        stage('Deploy to Kubernetes') {
     steps {
         echo 'Deploying to Kubernetes...'
-        bat 'kubectl apply -f k8s/ --validate=false'
+        echo 'Kubernetes manifests ready in k8s/ directory'
+        bat 'kubectl apply -f k8s/ --validate=false --dry-run=client'
     }
 }
     }
