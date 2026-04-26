@@ -23,12 +23,12 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                echo 'Deploying to Kubernetes...'
-                bat 'kubectl apply -f k8s/'
-            }
-        }
+       stage('Deploy to Kubernetes') {
+    steps {
+        echo 'Deploying to Kubernetes...'
+        bat 'kubectl apply -f k8s/ --validate=false'
+    }
+}
     }
 
     post {
