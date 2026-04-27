@@ -25,11 +25,10 @@ pipeline {
 stage('Deploy to Kubernetes') {
     steps {
         echo 'Deploying to Kubernetes...'
-        echo 'Kubernetes manifest files found:'
-        bat 'dir k8s\\'
-        echo 'Deploy stage complete - manifests ready for deployment'
+        bat 'kubectl apply -f k8s/deployment.yaml'
+        bat 'kubectl apply -f k8s/service.yaml'
     }
-}    }
+}   }
 
     post {
         success { echo 'Pipeline succeeded!' }
