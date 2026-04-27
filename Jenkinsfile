@@ -1,12 +1,15 @@
 pipeline {
-    agent {
-        label 'built-in'
+    agent any
+
+    environment {
+        IMAGE_NAME = "devops-experiment9"
     }
 
     stages {
-        stage('Clone') {
+
+        stage('Clone Repository') {
             steps {
-                echo 'Cloning from GitHub...'
+                echo 'Cloning repository from GitHub...'
                 checkout scm
             }
         }
@@ -14,29 +17,36 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                bat 'docker build -t devops-experiment9 .'
+                bat "docker build -t %IMAGE_NAME% ."
             }
         }
 
-        stage('Test') {
+        stage('Run Tests') {
             steps {
-                echo 'Running tests...'
-                bat 'docker run devops-experiment9 echo Tests passed'
+                echo 'Running container test...'
+                bat "docker run %IMAGE_NAME% echo Tests passed"
             }
         }
-stage('Deploy to Kubernetes') {
-    steps {
-        echo 'Deploying to Kubernetes via WSL...'
-        bat '''
-        wsl kubectl get nodes
-        wsl kubectl apply -f k8s/deployment.yaml
-        wsl kubectl apply -f k8s/service.yaml
-        '''
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                echo 'Deploying application to Kubernetes using WSL...'
+
+                bat '''
+                wsl kubectl get nodes
+                wsl kubectl apply -f k8s/deployment.yaml
+                wsl kubectl apply -f k8s/service.yaml
+                '''
+            }
+        }
     }
-}  }
 
     post {
-        success { echo 'Pipeline succeeded!' }
-        failure { echo 'Pipeline failed!' }
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+        failure {
+            echo 'Pipeline execution failed!'
+        }
     }
 }
