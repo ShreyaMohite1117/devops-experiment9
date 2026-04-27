@@ -24,11 +24,14 @@ pipeline {
         }
 stage('Deploy to Kubernetes') {
     steps {
-        echo 'Deploying to Kubernetes...'
-        bat 'kubectl apply -f k8s/deployment.yaml --validate=false'
-        bat 'kubectl apply -f k8s/service.yaml --validate=false'
+        echo 'Deploying to Kubernetes via WSL...'
+        bat '''
+        wsl kubectl get nodes
+        wsl kubectl apply -f k8s/deployment.yaml
+        wsl kubectl apply -f k8s/service.yaml
+        '''
     }
-}   }
+}  }
 
     post {
         success { echo 'Pipeline succeeded!' }
