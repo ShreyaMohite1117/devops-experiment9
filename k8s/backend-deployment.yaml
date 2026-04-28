@@ -14,6 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: yourdockerhub/backend:latest
+          imagePullPolicy: Always
+          image: shreyamohite1117/backend:latest
           ports:
             - containerPort: 5000
