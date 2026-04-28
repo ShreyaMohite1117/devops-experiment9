@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --ci --reporters=default --reporters=jest-junit"
+  },
+  "jest-junit": {
+    "outputDirectory": ".",
+    "outputName": "junit.xml"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +21,7 @@
   },
   "devDependencies": {
     "jest": "^30.3.0",
+    "jest-junit": "^17.0.0",
     "supertest": "^7.2.2"
   }
 }

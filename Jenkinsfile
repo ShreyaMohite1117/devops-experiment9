@@ -16,6 +16,20 @@ pipeline {
             }
         }
 
+        stage('Test Backend') {
+            steps {
+                dir('backend') {
+                    bat 'npm install'
+                    bat 'npm test'
+                }
+            }
+            post {
+                always {
+                    junit 'backend/junit.xml'
+                }
+            }
+        }
+
         stage('Build Images') {
             steps {
                 bat "docker build -t ${env.DOCKER_HUB}/${env.BACKEND_IMAGE}:latest backend"
