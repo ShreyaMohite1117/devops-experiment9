@@ -18,8 +18,8 @@ pipeline {
 
         stage('Build Images') {
             steps {
-                bat "docker build -t ${env.DOCKER_HUB}/${env.BACKEND_IMAGE}:latest backend"
-                bat "docker build -t ${env.DOCKER_HUB}/${env.FRONTEND_IMAGE}:latest frontend"
+                bat "docker build --platform linux/amd64 -t ${env.DOCKER_HUB}/${env.BACKEND_IMAGE}:latest backend"
+                bat "docker build --platform linux/amd64 -t ${env.DOCKER_HUB}/${env.FRONTEND_IMAGE}:latest frontend"
             }
         }
 
