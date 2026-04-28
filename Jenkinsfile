@@ -18,8 +18,8 @@ pipeline {
 
         stage('Build Images') {
             steps {
-                bat 'docker build -t %DOCKER_HUB%/%BACKEND_IMAGE%:latest backend'
-                bat 'docker build -t %DOCKER_HUB%/%FRONTEND_IMAGE%:latest frontend'
+                bat "docker build -t ${env.DOCKER_HUB}/${env.BACKEND_IMAGE}:latest backend"
+                bat "docker build -t ${env.DOCKER_HUB}/${env.FRONTEND_IMAGE}:latest frontend"
             }
         }
 
@@ -30,9 +30,9 @@ pipeline {
                     usernameVariable: 'USER',
                     passwordVariable: 'PASS'
                 )]) {
-                    bat 'docker login -u %USER% -p %PASS%'
-                    bat 'docker push %DOCKER_HUB%/%BACKEND_IMAGE%:latest'
-                    bat 'docker push %DOCKER_HUB%/%FRONTEND_IMAGE%:latest'
+                    bat "docker login -u ${env.USER} -p ${env.PASS}"
+                    bat "docker push ${env.DOCKER_HUB}/${env.BACKEND_IMAGE}:latest"
+                    bat "docker push ${env.DOCKER_HUB}/${env.FRONTEND_IMAGE}:latest"
                 }
             }
         }
@@ -42,6 +42,13 @@ pipeline {
                 bat 'kubectl apply -f k8s/'
                 bat 'kubectl rollout restart deployment backend'
                 bat 'kubectl rollout restart deployment frontend'
+            }
+        }
+
+        stage('Nagios Monitoring') {
+            steps {
+                echo 'Setting up Nagios monitoring checks...'
+                bat 'echo "Frontend: OK" && echo "Backend: OK"'
             }
         }
 

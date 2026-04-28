@@ -1,65 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Todo App</title>
-
+    <title>Global Todo App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        :root {
+            --bg-color: #0d0e15;
+            --container-bg: rgba(26, 27, 46, 0.7);
+            --primary: #8a2be2;
+            --primary-hover: #9d4edd;
+            --danger: #ff4d6d;
+            --danger-hover: #ff758f;
+            --text-main: #ffffff;
+            --text-muted: #a0a0b5;
+        }
+
         body {
-            background: #0f0f1a;
-            color: white;
-            font-family: Arial, sans-serif;
+            background: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 0%, #2a1b54 0%, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .container {
-            background: #1a1a2e;
-            padding: 25px;
-            border-radius: 15px;
-            width: 350px;
-            box-shadow: 0 0 20px rgba(128,0,255,0.3);
+            background: var(--container-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
         }
 
         h2 {
             text-align: center;
-            color: #b084ff;
+            margin-top: 0;
+            font-weight: 700;
+            background: linear-gradient(135deg, #b084ff, #7b2cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
         }
 
         input {
-            width: 65%;
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
+            flex-grow: 1;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
             outline: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
         }
 
         button {
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px 20px;
+            border-radius: 12px;
             border: none;
-            background: #7b2cff;
+            background: var(--primary);
             color: white;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .todo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .todo {
-            background: #2a2a40;
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.4s ease forwards;
         }
 
-        .delete {
-            background: #ff4d6d;
+        .todo:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(4px);
         }
 
-        .update {
-            background: #9d4edd;
+        .todo-text {
+            word-break: break-word;
+            flex-grow: 1;
+            margin-right: 15px;
+            line-height: 1.4;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .actions button {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .update { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        .update:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .delete { background: var(--danger); }
+        .delete:hover { background: var(--danger-hover); }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 20px 0;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -69,74 +167,92 @@
 <div class="container">
     <h2>Todo App</h2>
 
-    <input id="todoInput" placeholder="Enter task">
-    <button id="addBtn">Add</button>
+    <div class="input-group">
+        <input id="todoInput" placeholder="What needs to be done?" autocomplete="off">
+        <button id="addBtn">Add</button>
+    </div>
 
-    <div id="list"></div>
+    <div id="list" class="todo-list"></div>
 </div>
 
 <script>
-const API = "http://backend-service:5000/todos";
+const API = "http://localhost:30008/todos";
+const listEl = document.getElementById("list");
+const inputEl = document.getElementById("todoInput");
+const addBtn = document.getElementById("addBtn");
 
 // 🔹 Load Todos
 async function loadTodos() {
+    listEl.classList.add("loading");
     try {
         const res = await fetch(API);
+        if (!res.ok) throw new Error("Failed to fetch");
         const data = await res.json();
+        
+        listEl.innerHTML = "";
 
-        const list = document.getElementById("list");
-        list.innerHTML = "";
+        if (data.length === 0) {
+            listEl.innerHTML = '<div class="empty-state">No tasks yet. Add one above!</div>';
+            return;
+        }
 
         data.forEach(todo => {
             const div = document.createElement("div");
             div.className = "todo";
-
             div.innerHTML = `
-                <span>${todo.text}</span>
-                <div>
+                <span class="todo-text">${escapeHTML(todo.text)}</span>
+                <div class="actions">
                     <button class="update" data-id="${todo.id}">Edit</button>
                     <button class="delete" data-id="${todo.id}">Delete</button>
                 </div>
             `;
-
-            list.appendChild(div);
+            listEl.appendChild(div);
         });
 
     } catch (err) {
         console.error("Load error:", err);
+        listEl.innerHTML = '<div class="empty-state" style="color: var(--danger)">Failed to load tasks. Check connection.</div>';
+    } finally {
+        listEl.classList.remove("loading");
     }
 }
 
 // 🔹 Add Todo
 async function addTodo() {
-    const input = document.getElementById("todoInput");
-    const text = input.value.trim();
+    const text = inputEl.value.trim();
+    if (!text) return;
 
-    if (!text) {
-        alert("Enter something!");
-        return;
-    }
-
+    addBtn.disabled = true;
     try {
-        await fetch(API, {
+        const res = await fetch(API, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text })
         });
-
-        input.value = "";
-        loadTodos();
-
+        
+        if (res.ok) {
+            inputEl.value = "";
+            await loadTodos();
+        } else {
+            alert("Failed to add task.");
+        }
     } catch (err) {
         console.error("Add error:", err);
+    } finally {
+        addBtn.disabled = false;
+        inputEl.focus();
     }
 }
 
 // 🔹 Delete Todo
 async function deleteTodo(id) {
     try {
-        await fetch(`${API}/${id}`, { method: "DELETE" });
-        loadTodos();
+        const res = await fetch(`${API}/${id}`, { method: "DELETE" });
+        if (res.ok) {
+            await loadTodos();
+        } else {
+            alert("Failed to delete task.");
+        }
     } catch (err) {
         console.error("Delete error:", err);
     }
@@ -145,35 +261,53 @@ async function deleteTodo(id) {
 // 🔹 Update Todo
 async function updateTodo(id) {
     const newText = prompt("Enter updated task:");
-    if (!newText) return;
+    if (!newText || !newText.trim()) return;
 
     try {
-        await fetch(`${API}/${id}`, {
+        const res = await fetch(`${API}/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: newText })
+            body: JSON.stringify({ text: newText.trim() })
         });
 
-        loadTodos();
+        if (res.ok) {
+            await loadTodos();
+        } else {
+            alert("Failed to update task.");
+        }
     } catch (err) {
         console.error("Update error:", err);
     }
 }
 
-// 🔥 EVENT LISTENERS (fix for button not working issue)
+// Helper: escape HTML to prevent XSS
+function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
+}
 
-// Add button
-document.getElementById("addBtn").addEventListener("click", addTodo);
+// Event Listeners
+addBtn.addEventListener("click", addTodo);
 
-// Event delegation for Edit/Delete buttons
-document.getElementById("list").addEventListener("click", function(e) {
-    const id = e.target.getAttribute("data-id");
+inputEl.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") addTodo();
+});
 
-    if (e.target.classList.contains("delete")) {
+listEl.addEventListener("click", (e) => {
+    const target = e.target;
+    if (target.tagName !== "BUTTON") return;
+    
+    const id = target.getAttribute("data-id");
+    if (target.classList.contains("delete")) {
         deleteTodo(id);
-    }
-
-    if (e.target.classList.contains("update")) {
+    } else if (target.classList.contains("update")) {
         updateTodo(id);
     }
 });
