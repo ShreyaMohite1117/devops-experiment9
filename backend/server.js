@@ -66,6 +66,10 @@ app.delete('/todos/:id', (req, res) => {
     res.status(200).json({ message: "Deleted successfully" });
 });
 
-app.listen(5000, '0.0.0.0', () => {
-  console.log('Server running on port 5000');
-});
+if (require.main === module) {
+  app.listen(5000, '0.0.0.0', () => {
+    console.log('Server running on port 5000');
+  });
+}
+
+module.exports = app;
