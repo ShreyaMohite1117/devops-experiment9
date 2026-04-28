@@ -30,7 +30,7 @@ pipeline {
                     usernameVariable: 'USER',
                     passwordVariable: 'PASS'
                 )]) {
-                    bat 'echo %PASS% | docker login -u %USER% --password-stdin'
+                    bat 'docker login -u %USER% -p %PASS%'
                     bat 'docker push %DOCKER_HUB%/%BACKEND_IMAGE%:latest'
                     bat 'docker push %DOCKER_HUB%/%FRONTEND_IMAGE%:latest'
                 }
