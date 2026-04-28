@@ -3,6 +3,7 @@
 <head>
     <title>Global Todo App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --bg-color: #0d0e15;
@@ -11,13 +12,15 @@
             --primary-hover: #9d4edd;
             --danger: #ff4d6d;
             --danger-hover: #ff758f;
+            --success: #06d6a0;
             --text-main: #ffffff;
             --text-muted: #a0a0b5;
         }
 
         body {
             background: var(--bg-color);
-            background-image: radial-gradient(circle at 50% 0%, #2a1b54 0%, transparent 50%);
+            background-image: radial-gradient(circle at 50% 0%, #2a1b54 0%, transparent 50%),
+                              radial-gradient(circle at 80% 80%, #1a0b2e 0%, transparent 50%);
             color: var(--text-main);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
@@ -31,127 +34,205 @@
 
         .container {
             background: var(--container-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 30px;
-            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 35px;
+            border-radius: 24px;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            max-width: 450px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
         }
 
         h2 {
             text-align: center;
             margin-top: 0;
-            font-weight: 700;
-            background: linear-gradient(135deg, #b084ff, #7b2cff);
+            font-weight: 800;
+            background: linear-gradient(135deg, #b084ff, #ff7eb3);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 25px;
-            font-size: 1.8rem;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
         }
 
         .input-group {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 25px;
         }
 
-        input {
+        input[type="text"] {
             flex-grow: 1;
-            padding: 12px 15px;
-            border-radius: 12px;
+            padding: 14px 18px;
+            border-radius: 14px;
             border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.25);
             color: white;
             outline: none;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        input:focus {
+        input[type="text"]:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+            box-shadow: 0 0 0 4px rgba(138, 43, 226, 0.2);
+            background: rgba(0, 0, 0, 0.4);
         }
 
-        button {
-            padding: 12px 20px;
-            border-radius: 12px;
+        button.btn-primary {
+            padding: 14px 24px;
+            border-radius: 14px;
             border: none;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             color: white;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
         }
 
-        button:hover {
-            background: var(--primary-hover);
+        button.btn-primary:hover {
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.6);
         }
 
-        button:active {
-            transform: translateY(0);
+        button.btn-primary:active {
+            transform: translateY(1px);
         }
 
         .todo-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 5px;
         }
 
+        .todo-list::-webkit-scrollbar { width: 6px; }
+        .todo-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
         .todo {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px;
+            border-radius: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-            animation: fadeIn 0.4s ease forwards;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeIn 0.5s ease forwards;
+            gap: 12px;
         }
 
         .todo:hover {
             background: rgba(255, 255, 255, 0.08);
-            transform: translateX(4px);
+            transform: translateX(5px);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .todo.completed {
+            opacity: 0.6;
+            background: rgba(6, 214, 160, 0.05);
+        }
+
+        .todo.completed .todo-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .todo-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .checkbox {
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .checkbox:checked {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .checkbox:checked::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
         }
 
         .todo-text {
             word-break: break-word;
-            flex-grow: 1;
-            margin-right: 15px;
             line-height: 1.4;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
         }
 
         .actions {
             display: flex;
             gap: 8px;
+            flex-shrink: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .todo:hover .actions {
+            opacity: 1;
         }
 
         .actions button {
-            padding: 8px 12px;
-            font-size: 0.8rem;
+            width: 32px;
+            height: 32px;
             border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+            color: white;
         }
 
-        .update { background: rgba(255, 255, 255, 0.1); color: #fff; }
-        .update:hover { background: rgba(255, 255, 255, 0.2); }
+        .update { background: rgba(255, 255, 255, 0.1); }
+        .update:hover { background: var(--primary); transform: scale(1.1); }
 
-        .delete { background: var(--danger); }
-        .delete:hover { background: var(--danger-hover); }
+        .delete { background: rgba(255, 77, 109, 0.2); color: var(--danger) !important; }
+        .delete:hover { background: var(--danger); color: white !important; transform: scale(1.1); }
+
+        .stats {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+        }
 
         .empty-state {
             text-align: center;
             color: var(--text-muted);
-            padding: 20px 0;
+            padding: 30px 0;
             font-style: italic;
-            font-size: 0.9rem;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
@@ -165,14 +246,19 @@
 <body>
 
 <div class="container">
-    <h2>Todo App</h2>
+    <h2><i class="fa-solid fa-check-double"></i> Tasks</h2>
 
     <div class="input-group">
-        <input id="todoInput" placeholder="What needs to be done?" autocomplete="off">
-        <button id="addBtn">Add</button>
+        <input type="text" id="todoInput" placeholder="What needs to be done?" autocomplete="off">
+        <button id="addBtn" class="btn-primary"><i class="fa-solid fa-plus"></i></button>
     </div>
 
     <div id="list" class="todo-list"></div>
+    
+    <div class="stats" id="stats">
+        <span id="itemsLeft">0 items left</span>
+        <span id="itemsCompleted">0 completed</span>
+    </div>
 </div>
 
 <script>
@@ -180,6 +266,8 @@ const API = "http://localhost:30008/todos";
 const listEl = document.getElementById("list");
 const inputEl = document.getElementById("todoInput");
 const addBtn = document.getElementById("addBtn");
+const itemsLeftEl = document.getElementById("itemsLeft");
+const itemsCompletedEl = document.getElementById("itemsCompleted");
 
 // 🔹 Load Todos
 async function loadTodos() {
@@ -190,20 +278,30 @@ async function loadTodos() {
         const data = await res.json();
         
         listEl.innerHTML = "";
+        
+        // Update Stats
+        const active = data.filter(t => !t.completed).length;
+        const completed = data.length - active;
+        itemsLeftEl.innerText = `${active} item${active !== 1 ? 's' : ''} left`;
+        itemsCompletedEl.innerText = `${completed} completed`;
 
         if (data.length === 0) {
-            listEl.innerHTML = '<div class="empty-state">No tasks yet. Add one above!</div>';
+            listEl.innerHTML = '<div class="empty-state"><i class="fa-solid fa-clipboard-list fa-2x mb-2"></i><br>No tasks yet. Add one above!</div>';
             return;
         }
 
-        data.forEach(todo => {
+        // Sort: active first, then completed
+        data.sort((a, b) => a.completed - b.completed).forEach(todo => {
             const div = document.createElement("div");
-            div.className = "todo";
+            div.className = `todo ${todo.completed ? 'completed' : ''}`;
             div.innerHTML = `
-                <span class="todo-text">${escapeHTML(todo.text)}</span>
+                <div class="todo-content">
+                    <input type="checkbox" class="checkbox" data-id="${todo.id}" ${todo.completed ? 'checked' : ''}>
+                    <span class="todo-text">${escapeHTML(todo.text)}</span>
+                </div>
                 <div class="actions">
-                    <button class="update" data-id="${todo.id}">Edit</button>
-                    <button class="delete" data-id="${todo.id}">Delete</button>
+                    <button class="update" data-id="${todo.id}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="delete" data-id="${todo.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
                 </div>
             `;
             listEl.appendChild(div);
@@ -250,46 +348,47 @@ async function deleteTodo(id) {
         const res = await fetch(`${API}/${id}`, { method: "DELETE" });
         if (res.ok) {
             await loadTodos();
-        } else {
-            alert("Failed to delete task.");
         }
     } catch (err) {
         console.error("Delete error:", err);
     }
 }
 
-// 🔹 Update Todo
-async function updateTodo(id) {
-    const newText = prompt("Enter updated task:");
-    if (!newText || !newText.trim()) return;
+// 🔹 Update Todo Text
+async function updateTodoText(id, currentText) {
+    const newText = prompt("Update task:", currentText);
+    if (newText === null || !newText.trim() || newText.trim() === currentText) return;
 
     try {
-        const res = await fetch(`${API}/${id}`, {
+        await fetch(`${API}/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text: newText.trim() })
         });
-
-        if (res.ok) {
-            await loadTodos();
-        } else {
-            alert("Failed to update task.");
-        }
+        await loadTodos();
     } catch (err) {
         console.error("Update error:", err);
     }
 }
 
-// Helper: escape HTML to prevent XSS
+// 🔹 Toggle Todo Status
+async function toggleTodoStatus(id, isCompleted) {
+    try {
+        await fetch(`${API}/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ completed: isCompleted })
+        });
+        await loadTodos();
+    } catch (err) {
+        console.error("Toggle error:", err);
+    }
+}
+
+// Helper: escape HTML
 function escapeHTML(str) {
     return str.replace(/[&<>'"]/g, 
-        tag => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            "'": '&#39;',
-            '"': '&quot;'
-        }[tag] || tag)
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
     );
 }
 
@@ -301,14 +400,22 @@ inputEl.addEventListener("keypress", (e) => {
 });
 
 listEl.addEventListener("click", (e) => {
-    const target = e.target;
+    const target = e.target.closest('button') || e.target;
+    
+    if (target.classList.contains("checkbox")) {
+        const id = target.getAttribute("data-id");
+        toggleTodoStatus(id, target.checked);
+        return;
+    }
+    
     if (target.tagName !== "BUTTON") return;
     
     const id = target.getAttribute("data-id");
     if (target.classList.contains("delete")) {
         deleteTodo(id);
     } else if (target.classList.contains("update")) {
-        updateTodo(id);
+        const currentText = target.closest('.todo').querySelector('.todo-text').innerText;
+        updateTodoText(id, currentText);
     }
 });
 

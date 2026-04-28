@@ -16,7 +16,9 @@ app.post('/todos', (req, res) => {
     
     const todo = {
         id: Date.now(),
-        text: text
+        text: text,
+        completed: false,
+        createdAt: new Date().toISOString()
     };
     todos.push(todo);
     res.status(201).json(todo);
@@ -31,17 +33,22 @@ app.get('/todos', (req, res) => {
 app.put('/todos/:id', (req, res) => {
     const id = parseInt(req.params.id);
     const text = req.body.text?.trim();
+    const completed = req.body.completed;
     
-    if (!text) {
-        return res.status(400).json({ error: "Text is required" });
-    }
-
     const todoIndex = todos.findIndex(t => t.id === id);
     if (todoIndex === -1) {
         return res.status(404).json({ error: "Todo not found" });
     }
 
-    todos[todoIndex].text = text;
+    if (text !== undefined) {
+        if (!text) return res.status(400).json({ error: "Text cannot be empty" });
+        todos[todoIndex].text = text;
+    }
+    
+    if (completed !== undefined) {
+        todos[todoIndex].completed = Boolean(completed);
+    }
+
     res.status(200).json(todos[todoIndex]);
 });
 
