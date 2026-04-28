@@ -11,7 +11,8 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/ShreyaMohite1117/devops-experiment9.git'
+                git branch: 'main',
+                    url: 'https://github.com/ShreyaMohite1117/devops-experiment9.git'
             }
         }
 
