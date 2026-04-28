@@ -37,10 +37,12 @@ pipeline {
                 )]) {
                     bat '''
                     echo Logging into DockerHub...
-                    echo %PASS% | docker login -u %USER% --password-stdin
+                    docker login -u %USER% -p %PASS%
 
-                    echo Pushing Images...
+                    echo Pushing Backend...
                     docker push %DOCKER_HUB%/%BACKEND_IMAGE%:%TAG%
+
+                    echo Pushing Frontend...
                     docker push %DOCKER_HUB%/%FRONTEND_IMAGE%:%TAG%
                     '''
                 }
