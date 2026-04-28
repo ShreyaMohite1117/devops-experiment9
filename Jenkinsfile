@@ -18,12 +18,12 @@ pipeline {
 
         stage('Build Images') {
             steps {
-                sh '''
-                echo "Building Backend Image..."
-                docker build -t $DOCKER_HUB/$BACKEND_IMAGE:$TAG ./backend
+                bat '''
+                echo Building Backend Image...
+                docker build -t %DOCKER_HUB%/%BACKEND_IMAGE%:%TAG% backend
 
-                echo "Building Frontend Image..."
-                docker build -t $DOCKER_HUB/$FRONTEND_IMAGE:$TAG ./frontend
+                echo Building Frontend Image...
+                docker build -t %DOCKER_HUB%/%FRONTEND_IMAGE%:%TAG% frontend
                 '''
             }
         }
@@ -35,13 +35,13 @@ pipeline {
                     usernameVariable: 'USER',
                     passwordVariable: 'PASS'
                 )]) {
-                    sh '''
-                    echo "Logging into DockerHub..."
-                    echo $PASS | docker login -u $USER --password-stdin
+                    bat '''
+                    echo Logging into DockerHub...
+                    echo %PASS% | docker login -u %USER% --password-stdin
 
-                    echo "Pushing Images..."
-                    docker push $DOCKER_HUB/$BACKEND_IMAGE:$TAG
-                    docker push $DOCKER_HUB/$FRONTEND_IMAGE:$TAG
+                    echo Pushing Images...
+                    docker push %DOCKER_HUB%/%BACKEND_IMAGE%:%TAG%
+                    docker push %DOCKER_HUB%/%FRONTEND_IMAGE%:%TAG%
                     '''
                 }
             }
@@ -49,23 +49,20 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh '''
-                echo "Applying Kubernetes configs..."
-                kubectl apply -f k8s/
+                bat '''
+                echo Applying Kubernetes configs...
+                kubectl apply -f k8s
 
-                echo "Waiting for pods..."
-                sleep 10
+                echo Waiting for pods...
+                timeout /t 10
 
-                echo "===== POD STATUS ====="
+                echo ===== POD STATUS =====
                 kubectl get pods -o wide
 
-                echo "===== SERVICES ====="
+                echo ===== SERVICES =====
                 kubectl get svc
 
-                echo "===== DESCRIBE FRONTEND SERVICE ====="
-                kubectl describe svc frontend-service
-
-                echo "===== NODE INFO ====="
+                echo ===== NODE INFO =====
                 kubectl get nodes -o wide
                 '''
             }
@@ -73,17 +70,16 @@ pipeline {
 
         stage('Show Access URL') {
             steps {
-                sh '''
-                echo "==============================="
-                echo "APPLICATION ACCESS INFO"
-                echo "==============================="
+                bat '''
+                echo ===============================
+                echo APPLICATION ACCESS INFO
+                echo ===============================
 
-                NODE_PORT=$(kubectl get svc frontend-service -o jsonpath='{.spec.ports[0].nodePort}')
-                NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}')
+                kubectl get svc frontend-service
 
-                echo "Frontend URL: http://$NODE_IP:$NODE_PORT"
-                echo "Backend Service: backend-service:5000"
-                echo "==============================="
+                echo Open in browser:
+                echo http://localhost:30007
+                echo ===============================
                 '''
             }
         }
