@@ -33,7 +33,7 @@ app.put('/todos/:id', (req, res) => {
 
 // DELETE
 app.delete('/todos/:id', (req, res) => {
-    const id = parseInt(req.params.id);
+    const id = Number.parseInt(req.params.id);
     todos = todos.filter(t => t.id !== id);
     res.json({ message: "Deleted" });
 });
