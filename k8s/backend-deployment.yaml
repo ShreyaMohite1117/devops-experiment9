@@ -15,6 +15,6 @@ spec:
       containers:
         - name: backend
           imagePullPolicy: Always
-          image: shreyamohite1117/backend:latest
+          image: shreyamohite1117/todo-backend:latest
           ports:
             - containerPort: 5000
