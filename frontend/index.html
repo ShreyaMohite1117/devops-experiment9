@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App</title>
+
+    <style>
+        body {
+            background: #0f0f1a;
+            color: white;
+            font-family: Arial;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #1a1a2e;
+            padding: 25px;
+            border-radius: 15px;
+            width: 350px;
+            box-shadow: 0 0 20px rgba(128,0,255,0.3);
+        }
+
+        h2 {
+            text-align: center;
+            color: #b084ff;
+        }
+
+        input {
+            width: 70%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        button {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #7b2cff;
+            color: white;
+            cursor: pointer;
+        }
+
+        .todo {
+            background: #2a2a40;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .delete {
+            background: #ff4d6d;
+        }
+
+        .update {
+            background: #9d4edd;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Todo App</h2>
+
+    <input id="todoInput" placeholder="Enter task">
+    <button onclick="addTodo()">Add</button>
+
+    <div id="list"></div>
+</div>
+
+<script>
+const API = "http://localhost:5000/todos";
+
+async function loadTodos() {
+    const res = await fetch(API);
+    const data = await res.json();
+
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    data.forEach(todo => {
+        const div = document.createElement("div");
+        div.className = "todo";
+
+        div.innerHTML = `
+            <span>${todo.text}</span>
+            <div>
+                <button class="update" onclick="updateTodo(${todo.id})">Edit</button>
+                <button class="delete" onclick="deleteTodo(${todo.id})">Delete</button>
+            </div>
+        `;
+
+        list.appendChild(div);
+    });
+}
+
+async function addTodo() {
+    const text = document.getElementById("todoInput").value;
+
+    if (!text) return alert("Enter something!");
+
+    await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+    });
+
+    document.getElementById("todoInput").value = "";
+    loadTodos();
+}
+
+async function deleteTodo(id) {
+    await fetch(API + "/" + id, { method: "DELETE" });
+    loadTodos();
+}
+
+async function updateTodo(id) {
+    const newText = prompt("Enter updated task:");
+    if (!newText) return;
+
+    await fetch(API + "/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: newText })
+    });
+
+    loadTodos();
+}
+
+loadTodos();
+</script>
+
+</body>
+</html>

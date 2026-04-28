@@ -1,41 +1,23 @@
 pipeline {
-    agent {
-        label 'built-in'
-    }
+    agent any
 
     stages {
         stage('Clone') {
             steps {
-                echo 'Cloning from GitHub...'
-                checkout scm
+                git 'https://github.com/ShreyaMohite1117/devops-experiment9.git'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Docker') {
             steps {
-                echo 'Building Docker image...'
-                bat 'docker build -t devops-experiment9 .'
+                sh 'docker build -t todo-app ./backend'
             }
         }
 
-        stage('Test') {
+        stage('Run Container') {
             steps {
-                echo 'Running tests...'
-                bat 'docker run devops-experiment9 echo Tests passed'
+                sh 'docker run -d -p 5000:5000 todo-app'
             }
         }
-stage('Deploy to Kubernetes') {
-    steps {
-        echo 'Deploying to Kubernetes...'
-        bat '''
-        kubectl apply -f k8s/deployment.yaml --validate=false
-        kubectl apply -f k8s/service.yaml --validate=false
-        '''
-    }
-} }
-
-    post {
-        success { echo 'Pipeline succeeded!' }
-        failure { echo 'Pipeline failed!' }
     }
 }
