@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          imagePullPolicy: Always
           image: shreyamohite1117/todo-frontend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
